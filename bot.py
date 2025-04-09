@@ -182,16 +182,16 @@ app.add_handler(CommandHandler("subscribers", subscribers))
 app.add_handler(CommandHandler("ask", ask))
 app.add_handler(CommandHandler("reset", reset))
 
-setup_scheduler(app)
-
 # Webhook для Render
 print("✅ Бот запущен через Webhook.")
 
 import nest_asyncio
+import asyncio
+
 nest_asyncio.apply()
 
 async def main():
-    setup_scheduler(app)  # Сначала запускаем планировщик
+    setup_scheduler(app)  # Планировщик запускается здесь!
     await app.bot.set_webhook("https://impactru-bot.onrender.com")
     await app.run_webhook(
         listen="0.0.0.0",
@@ -199,5 +199,4 @@ async def main():
         webhook_url="https://impactru-bot.onrender.com"
     )
 
-import asyncio
 asyncio.run(main())
