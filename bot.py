@@ -7,6 +7,8 @@ from utils.google_sheets import save_feedback_to_google_sheets
 from utils.subscriber_sheet import save_subscriber_to_sheet
 from utils.subscriber_stats import get_subscriber_count
 import nest_asyncio
+import openai
+
 
 TOKEN = os.environ["TOKEN"]
 ALLOWED_USERS = [671003971]
@@ -126,6 +128,29 @@ async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"👥 Всего подписчиков: {count}")
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
+        
+async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_input = ' '.join(context.args)
+    if not user_input:
+        await update.message.reply_text("❓ Введите вопрос после команды /ask")
+        return
+
+    await update.message.reply_text("💬 Думаю...")
+
+    openai.api_key = os.environ["OPENAI_API_KEY"]
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # или "gpt-4" если у тебя доступ
+            messages=[{"role": "user", "content": user_input}],
+            max_tokens=500,
+            temperature=0.7,
+        )
+        answer = response.choices[0].message.content
+        await update.message.reply_text(answer)
+    except Exception as e:
+        await update.message.reply_text(f"⚠️ Ошибка при обращении к OpenAI:\n{e}")
+
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
@@ -136,6 +161,8 @@ app.add_handler(CommandHandler("quote", quote))
 app.add_handler(CommandHandler("poll", poll))
 app.add_handler(CommandHandler("menu", menu))
 app.add_handler(CommandHandler("subscribers", subscribers))
+app.add_handler(CommandHandler("ask", ask))
+
 
 print("✅ Бот запущен через Webhook.")
 
