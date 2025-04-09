@@ -84,6 +84,10 @@ app.add_handler(CommandHandler("post", post))
 app.add_handler(CommandHandler("feedback", feedback))
 app.add_handler(CommandHandler("quote", quote))
 app.add_handler(CommandHandler("poll", poll))
+app.add_handler(CommandHandler("menu", menu))
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("📢 Поделиться ботом", url="https://t.me/MyblogPR_bot?start=share")],
