@@ -36,8 +36,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if args:
         if args[0] == "feedback":
-            await update.message.reply_text("✍️ Напишите отзыв в формате:
-/feedback ваш текст")
+            await update.message.reply_text(
+    "✍️ Напишите отзыв в формате:\n/feedback ваш текст"
+)
+
             return
         elif args[0] == "share":
             await update.message.reply_text("🙏 Спасибо, что делитесь ботом с другими!")
