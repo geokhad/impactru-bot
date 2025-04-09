@@ -50,26 +50,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = (
-        "/start — запустить бота
-"
-        "/help — список команд
-"
-        "/post <текст> — отправить пост в канал
-"
-        "/feedback <текст> — отзыв
-"
-        "/quote — цитата дня
-"
-        "/poll Вопрос Вариант1 Вариант2 [...] — опрос
-"
-        "/menu — кнопки
-"
-        "/ask <вопрос> — задать GPT
-"
-        "/reset — сбросить историю
-"
-        "/subscribers — кол-во подписчиков"
-    )
+    "/start — запустить бота\n"
+    "/help — список команд\n"
+    "/post <текст> — отправить пост в канал\n"
+    "/feedback <текст> — отзыв\n"
+    "/quote — цитата дня\n"
+    "/poll Вопрос Вариант1 Вариант2 [...] — опрос\n"
+    "/menu — кнопки\n"
+    "/ask <вопрос> — задать GPT\n"
+    "/reset — сбросить историю\n"
+    "/subscribers — кол-во подписчиков"
+)
+
     await update.message.reply_text(help_text)
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
