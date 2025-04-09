@@ -137,11 +137,13 @@ async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
 async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_input = ' '.join(context.args)
+    user = update.effective_user
+
     if not user_input:
         await update.message.reply_text("❓ Введите вопрос после команды /ask")
         return
 
-    allowed, remaining = check_and_increment_usage(update.effective_user.id)
+    allowed, remaining = check_and_increment_usage(user.id)
     if not allowed:
         await update.message.reply_text("🚫 Лимит: не более 5 GPT-запросов в день.")
         return
@@ -152,31 +154,22 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
     try:
+        add_to_dialog(user.id, "user", user_input)
+        history = get_dialog(user.id)
+
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            add_to_dialog(user.id, "user", user_input)
-history = get_dialog(user.id)
-
-response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=history,
-    temperature=0.7,
-    max_tokens=500,
-)
-answer = response.choices[0].message.content.strip()
-add_to_dialog(user.id, "assistant", answer)
-
+            messages=history,
             temperature=0.7,
             max_tokens=500,
         )
         answer = response.choices[0].message.content.strip()
+        add_to_dialog(user.id, "assistant", answer)
+
         await update.message.reply_text(answer)
+
     except Exception as e:
         await update.message.reply_text(f"⚠️ Ошибка от OpenAI:\n{e}")
-        
-        async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    reset_dialog(update.effective_user.id)
-    await update.message.reply_text("🔄 История диалога сброшена.")
 
 app.add_handler(CommandHandler("reset", reset))
 
