@@ -96,12 +96,22 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-print("✅ Бот запущен.")
+print("✅ Бот запущен через Webhook.")
 
 import asyncio
+import nest_asyncio
+
+nest_asyncio.apply()
 
 async def main():
     setup_scheduler(app)
-    await app.run_polling()
+    await app.bot.set_webhook("https://impactru-bot.onrender.com")
+    await app.run_webhook(
+        listen="0.0.0.0",
+        port=10000,
+        webhook_url="https://impactru-bot.onrender.com"
+    )
 
-asyncio.run(main())
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+
