@@ -102,7 +102,7 @@ async def feedback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Спасибо за ваш отзыв для 'Своя Дорога'! 🙏")
 
 async def quote(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f"🧠 Цитата дня:
+    await update.message.reply_text(f"🧠 "Цитата дня:\nМарк Твен"
 {random.choice(QUOTES)}")
 
 async def poll(update: Update, context: ContextTypes.DEFAULT_TYPE):
