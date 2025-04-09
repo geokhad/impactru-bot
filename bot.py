@@ -33,7 +33,7 @@ async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ALLOWED_USERS:
         await update.message.reply_text("⛔ Нет доступа.")
         return
-    message = ' '.join(context.args) or "📣 Новое сообщение от Админа!"
+    message = ' '.join(context.args) or "📣 Маленький шаг — большое дело"
     keyboard = [[InlineKeyboardButton("Подробнее", url="https://t.me/Impactru")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await context.bot.send_message(chat_id=CHANNEL_ID, text=message, parse_mode=ParseMode.HTML, reply_markup=reply_markup)
@@ -82,23 +82,26 @@ app.add_handler(CommandHandler("post", post))
 app.add_handler(CommandHandler("feedback", feedback))
 app.add_handler(CommandHandler("quote", quote))
 app.add_handler(CommandHandler("poll", poll))
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        [InlineKeyboardButton("📢 Поделиться ботом", url="https://t.me/MyblogPR_bot?start=share")],
+        [InlineKeyboardButton("📝 Оставить отзыв", url="https://t.me/MyblogPR_bot?start=feedback")],
+        [InlineKeyboardButton("📚 Наш канал", url="https://t.me/Impactru")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-print("✅ Бот запущен через Webhook.")
+    await update.message.reply_text(
+        "🔘 Выберите, что хотите сделать:",
+        reply_markup=reply_markup
+    )
+
+
+print("✅ Бот запущен.")
+
+import asyncio
 
 async def main():
     setup_scheduler(app)
-    await app.bot.set_webhook("https://impactru-bot.onrender.com")
-    await app.run_webhook(
-        listen="0.0.0.0",
-        port=10000,
-        webhook_url="https://impactru-bot.onrender.com"
-    )
+    await app.run_polling()
 
-import asyncio
-import nest_asyncio
-
-nest_asyncio.apply()
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
-
+asyncio.run(main())
