@@ -20,17 +20,11 @@ QUOTES = [
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     args = context.args
-    
+
     try:
-    save_subscriber_to_sheet(user.id, user.full_name, user.username)
-except Exception as e:
-    print("Ошибка при сохранении в Google Sheets:", e)
-
-
-
-    # 💾 Сохраняем в subscribers.txt
-    with open("subscribers.txt", "a", encoding="utf-8") as f:
-        f.write(f"{user.id},{user.full_name},{user.username}\n")
+        save_subscriber_to_sheet(user.id, user.full_name, user.username)
+    except Exception as e:
+        print("Ошибка при сохранении в Google Sheets:", e)
 
     if args:
         if args[0] == "feedback":
@@ -41,6 +35,7 @@ except Exception as e:
             return
 
     await update.message.reply_text("Привет! Я бот 😊 Напиши /help чтобы узнать, что я умею.")
+
 
 async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ALLOWED_USERS:
