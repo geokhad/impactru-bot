@@ -10,6 +10,8 @@ import nest_asyncio
 import openai
 from openai import OpenAI
 from utils.usage_tracker import check_and_increment_usage
+from utils.dialog_memory import add_to_dialog, get_dialog, reset_dialog
+
 
 
 
@@ -152,7 +154,18 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": user_input}],
+            add_to_dialog(user.id, "user", user_input)
+history = get_dialog(user.id)
+
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=history,
+    temperature=0.7,
+    max_tokens=500,
+)
+answer = response.choices[0].message.content.strip()
+add_to_dialog(user.id, "assistant", answer)
+
             temperature=0.7,
             max_tokens=500,
         )
@@ -160,6 +173,13 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(answer)
     except Exception as e:
         await update.message.reply_text(f"⚠️ Ошибка от OpenAI:\n{e}")
+        
+        async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    reset_dialog(update.effective_user.id)
+    await update.message.reply_text("🔄 История диалога сброшена.")
+
+app.add_handler(CommandHandler("reset", reset))
+
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
