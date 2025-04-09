@@ -131,7 +131,7 @@ async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
         
-aasync def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_input = ' '.join(context.args)
     if not user_input:
         await update.message.reply_text("❓ Введите вопрос после команды /ask")
