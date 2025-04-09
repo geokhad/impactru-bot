@@ -4,6 +4,7 @@ from telegram.constants import ParseMode
 import random, datetime, os
 from scheduler import setup_scheduler
 from utils.google_sheets import save_feedback_to_google_sheets
+from utils.subscriber_sheet import save_subscriber_to_sheet
 import nest_asyncio
 import asyncio
 TOKEN = os.environ["TOKEN"]
@@ -19,6 +20,11 @@ QUOTES = [
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     args = context.args
+    try:
+    save_subscriber_to_sheet(user.id, user.full_name, user.username)
+except Exception as e:
+    print("Ошибка при сохранении в Google Sheets:", e)
+
 
     # 💾 Сохраняем в subscribers.txt
     with open("subscribers.txt", "a", encoding="utf-8") as f:
