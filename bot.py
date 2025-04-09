@@ -83,16 +83,17 @@ app.add_handler(CommandHandler("feedback", feedback))
 app.add_handler(CommandHandler("quote", quote))
 app.add_handler(CommandHandler("poll", poll))
 
-print("✅ Бот запущен.")
-
-import asyncio
-import nest_asyncio
-
-nest_asyncio.apply()  # ← ВАЖНО: вызывается сразу
+print("✅ Бот запущен через Webhook.")
 
 async def main():
     setup_scheduler(app)
-    await app.run_polling()
+    await app.bot.set_webhook("https://impactru-bot.onrender.com")
+    await app.run_webhook(
+        listen="0.0.0.0",
+        port=10000,
+        webhook_url="https://impactru-bot.onrender.com"
+    )
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+import asyncio
+asyncio.run(main())
+
