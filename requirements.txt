@@ -1,0 +1,6 @@
+python-telegram-bot==20.7
+apscheduler
+gspread
+oauth2client
+nest_asyncio
+
