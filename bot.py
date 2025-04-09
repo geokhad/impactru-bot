@@ -17,7 +17,17 @@ QUOTES = [
 ]
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    args = context.args
+    if args:
+        if args[0] == "feedback":
+            await update.message.reply_text("✍️ Напишите отзыв в формате:\n/feedback ваш текст")
+            return
+        elif args[0] == "share":
+            await update.message.reply_text("🙏 Спасибо, что делитесь ботом с другими!")
+            return
+
     await update.message.reply_text("Привет! Я твой бот 😊 Напиши /help чтобы узнать, что я умею.")
+
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = (
