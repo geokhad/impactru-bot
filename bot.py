@@ -1,12 +1,13 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from telegram.constants import ParseMode
-import random, datetime, os
+import random, datetime, os, asyncio
 from scheduler import setup_scheduler
 from utils.google_sheets import save_feedback_to_google_sheets
 from utils.subscriber_sheet import save_subscriber_to_sheet
+from utils.subscriber_stats import get_subscriber_count
 import nest_asyncio
-import asyncio
+
 TOKEN = os.environ["TOKEN"]
 ALLOWED_USERS = [671003971]
 CHANNEL_ID = "@Impactru"
@@ -34,21 +35,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("🙏 Спасибо, что делитесь ботом с другими!")
             return
 
-    await update.message.reply_text("Привет! Я бот 😊 Напиши /help чтобы узнать, что я умею.")
-
-
-async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id not in ALLOWED_USERS:
-        await update.message.reply_text("⛔ Только для администратора.")
-        return
-
-    try:
-        with open("subscribers.txt", "r", encoding="utf-8") as f:
-            lines = f.readlines()
-        count = len(set(line.split(',')[0] for line in lines))
-        await update.message.reply_text(f"👥 Всего подписчиков: {count}")
-    except FileNotFoundError:
-        await update.message.reply_text("Файл subscribers.txt ещё не создан.")
+    await update.message.reply_text("Привет! Я твой бот 😊 Напиши /help чтобы узнать, что я умею.")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = (
@@ -58,7 +45,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/feedback <текст> — отзыв\n"
         "/quote — цитата дня\n"
         "/poll Вопрос Вариант1 Вариант2 [...] — опрос\n"
-        "/menu — меню с кнопками"
+        "/menu — меню с кнопками\n"
+        "/subscribers — количество подписчиков"
     )
     await update.message.reply_text(help_text)
 
@@ -128,6 +116,17 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
+async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ALLOWED_USERS:
+        await update.message.reply_text("⛔ Только для администратора.")
+        return
+
+    try:
+        count = get_subscriber_count()
+        await update.message.reply_text(f"👥 Всего подписчиков: {count}")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка: {e}")
+
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("help", help_command))
@@ -137,7 +136,6 @@ app.add_handler(CommandHandler("quote", quote))
 app.add_handler(CommandHandler("poll", poll))
 app.add_handler(CommandHandler("menu", menu))
 app.add_handler(CommandHandler("subscribers", subscribers))
-
 
 print("✅ Бот запущен через Webhook.")
 
