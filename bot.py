@@ -187,9 +187,11 @@ setup_scheduler(app)
 # Webhook для Render
 print("✅ Бот запущен через Webhook.")
 
+import nest_asyncio
 nest_asyncio.apply()
 
 async def main():
+    setup_scheduler(app)  # Сначала запускаем планировщик
     await app.bot.set_webhook("https://impactru-bot.onrender.com")
     await app.run_webhook(
         listen="0.0.0.0",
@@ -197,7 +199,5 @@ async def main():
         webhook_url="https://impactru-bot.onrender.com"
     )
 
-    # 👇 Переносим сюда!
-    setup_scheduler(app)
-
-asyncio.get_event_loop().run_until_complete(main())
+import asyncio
+asyncio.run(main())
