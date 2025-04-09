@@ -94,8 +94,10 @@ async def feedback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         save_feedback_to_google_sheets(user.full_name, str(user.id), feedback_text)
     except Exception as e:
-        await update.message.reply_text(f"❌ Ошибка Google Sheets:
-{e}")
+        await update.message.reply_text(
+    f"❌ Ошибка Google Sheets:\n{e}"
+)
+
         return
     await update.message.reply_text("Спасибо за ваш отзыв для 'Своя Дорога'! 🙏")
 
