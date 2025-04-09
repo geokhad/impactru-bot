@@ -9,6 +9,8 @@ from utils.subscriber_stats import get_subscriber_count
 import nest_asyncio
 import openai
 from openai import OpenAI
+from utils.usage_tracker import check_and_increment_usage
+
 
 
 
@@ -134,6 +136,12 @@ async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_input = ' '.join(context.args)
     if not user_input:
+    allowed, remaining = check_and_increment_usage(update.effective_user.id)
+if not allowed:
+    await update.message.reply_text("🚫 Лимит: не более 5 GPT-запросов в день.")
+    return
+await update.message.reply_text(f"💬 Осталось GPT-запросов сегодня: {remaining}")
+
         await update.message.reply_text("❓ Введите вопрос после команды /ask")
         return
 
