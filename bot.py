@@ -197,4 +197,7 @@ async def main():
         webhook_url="https://impactru-bot.onrender.com"
     )
 
+    # 👇 Переносим сюда!
+    setup_scheduler(app)
+
 asyncio.get_event_loop().run_until_complete(main())
