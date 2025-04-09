@@ -5,7 +5,9 @@ import random, datetime
 from scheduler import setup_scheduler
 from utils.google_sheets import save_feedback_to_google_sheets
 
-TOKEN = "8128779719:AAFGkm-hYGT5peZ9FuOob4utBIE5xbeuIP0"
+import os
+TOKEN = os.environ["TOKEN"]
+
 ALLOWED_USERS = [671003971]
 CHANNEL_ID = "@Impactru"
 QUOTES = [
