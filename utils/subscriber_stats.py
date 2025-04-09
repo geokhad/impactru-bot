@@ -11,6 +11,8 @@ def get_subscriber_count():
 
     sheet = client.open("ImpactRU Subscribers").sheet1
     records = sheet.get_all_records()
-    return len(records)
+
+    unique_ids = set(str(row["ID"]) for row in records if row.get("ID"))
+    return len(unique_ids)
 
 
