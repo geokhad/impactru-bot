@@ -17,7 +17,13 @@ QUOTES = [
 ]
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
     args = context.args
+
+    # 💾 Сохраняем в subscribers.txt
+    with open("subscribers.txt", "a", encoding="utf-8") as f:
+        f.write(f"{user.id},{user.full_name},{user.username}\n")
+
     if args:
         if args[0] == "feedback":
             await update.message.reply_text("✍️ Напишите отзыв в формате:\n/feedback ваш текст")
@@ -26,8 +32,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("🙏 Спасибо, что делитесь ботом с другими!")
             return
 
-    await update.message.reply_text("Привет! Я твой бот 😊 Напиши /help чтобы узнать, что я умею.")
+    await update.message.reply_text("Привет! Я бот 😊 Напиши /help чтобы узнать, что я умею.")
 
+async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ALLOWED_USERS:
+        await update.message.reply_text("⛔ Только для администратора.")
+        return
+
+    try:
+        with open("subscribers.txt", "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        count = len(set(line.split(',')[0] for line in lines))
+        await update.message.reply_text(f"👥 Всего подписчиков: {count}")
+    except FileNotFoundError:
+        await update.message.reply_text("Файл subscribers.txt ещё не создан.")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = (
@@ -115,6 +133,8 @@ app.add_handler(CommandHandler("feedback", feedback))
 app.add_handler(CommandHandler("quote", quote))
 app.add_handler(CommandHandler("poll", poll))
 app.add_handler(CommandHandler("menu", menu))
+app.add_handler(CommandHandler("subscribers", subscribers))
+
 
 print("✅ Бот запущен через Webhook.")
 
