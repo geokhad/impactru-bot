@@ -1,13 +1,12 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from telegram.constants import ParseMode
-import random, datetime
+import random, datetime, os
 from scheduler import setup_scheduler
 from utils.google_sheets import save_feedback_to_google_sheets
+import nest_asyncio
 
-import os
 TOKEN = os.environ["TOKEN"]
-
 ALLOWED_USERS = [671003971]
 CHANNEL_ID = "@Impactru"
 QUOTES = [
@@ -27,7 +26,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/post <текст> — отправить пост в канал\n"
         "/feedback <текст> — отзыв\n"
         "/quote — цитата дня\n"
-        "/poll Вопрос Вариант1 Вариант2 [...] — опрос"
+        "/poll Вопрос Вариант1 Вариант2 [...] — опрос\n"
+        "/menu — меню с кнопками"
     )
     await update.message.reply_text(help_text)
 
@@ -35,9 +35,16 @@ async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ALLOWED_USERS:
         await update.message.reply_text("⛔ Нет доступа.")
         return
+
     message = ' '.join(context.args) or "📣 Маленький шаг — большое дело"
-    keyboard = [[InlineKeyboardButton("Подробнее", url="https://t.me/Impactru")]]
+
+    keyboard = [
+        [InlineKeyboardButton("🔗 Подробнее", url="https://t.me/Impactru")],
+        [InlineKeyboardButton("📢 Поделиться ботом", url="https://t.me/MyblogPR_bot?start=share")],
+        [InlineKeyboardButton("📝 Оставить отзыв", url="https://t.me/MyblogPR_bot?start=feedback")]
+    ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
     await context.bot.send_message(chat_id=CHANNEL_ID, text=message, parse_mode=ParseMode.HTML, reply_markup=reply_markup)
     await update.message.reply_text("✅ Сообщение отправлено в канал.")
 
@@ -77,17 +84,6 @@ async def poll(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_poll(chat_id=CHANNEL_ID, question=question, options=options, is_anonymous=False)
     await update.message.reply_text("📊 Опрос отправлен в канал.")
 
-app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("help", help_command))
-app.add_handler(CommandHandler("post", post))
-app.add_handler(CommandHandler("feedback", feedback))
-app.add_handler(CommandHandler("quote", quote))
-app.add_handler(CommandHandler("poll", poll))
-app.add_handler(CommandHandler("menu", menu))
-
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("📢 Поделиться ботом", url="https://t.me/MyblogPR_bot?start=share")],
@@ -101,11 +97,16 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
+app = ApplicationBuilder().token(TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("help", help_command))
+app.add_handler(CommandHandler("post", post))
+app.add_handler(CommandHandler("feedback", feedback))
+app.add_handler(CommandHandler("quote", quote))
+app.add_handler(CommandHandler("poll", poll))
+app.add_handler(CommandHandler("menu", menu))
 
 print("✅ Бот запущен через Webhook.")
-
-import asyncio
-import nest_asyncio
 
 nest_asyncio.apply()
 
@@ -120,4 +121,3 @@ async def main():
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
-
