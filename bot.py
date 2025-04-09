@@ -136,26 +136,23 @@ async def subscribers(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_input = ' '.join(context.args)
     if not user_input:
-        allowed, remaining = check_and_increment_usage(update.effective_user.id)
+        await update.message.reply_text("❓ Введите вопрос после команды /ask")
+        return
+
+    allowed, remaining = check_and_increment_usage(update.effective_user.id)
     if not allowed:
         await update.message.reply_text("🚫 Лимит: не более 5 GPT-запросов в день.")
         return
 
     await update.message.reply_text(f"💬 Осталось GPT-запросов сегодня: {remaining}")
-
-        await update.message.reply_text("❓ Введите вопрос после команды /ask")
-        return
-
     await update.message.reply_text("💬 Думаю...")
 
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # или gpt-4, если есть доступ
-            messages=[
-                {"role": "user", "content": user_input}
-            ],
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": user_input}],
             temperature=0.7,
             max_tokens=500,
         )
@@ -163,7 +160,6 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(answer)
     except Exception as e:
         await update.message.reply_text(f"⚠️ Ошибка от OpenAI:\n{e}")
-
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
