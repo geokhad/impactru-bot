@@ -43,7 +43,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("🙏 Спасибо, что делитесь ботом с другими!")
             return
 
-    await update.message.reply_text("Привет! Я бот проекта 'Своя Дорога' 😊 Напиши /help чтобы узнать, что я умею.")
+    await update.message.reply_text("""Привет! Я бот проекта 'Своя Дорога' 😊 Напиши /help чтобы узнать, что я умею.""")
+
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = (
