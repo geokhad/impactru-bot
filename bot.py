@@ -20,10 +20,12 @@ QUOTES = [
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     args = context.args
+    
     try:
     save_subscriber_to_sheet(user.id, user.full_name, user.username)
 except Exception as e:
     print("Ошибка при сохранении в Google Sheets:", e)
+
 
 
     # 💾 Сохраняем в subscribers.txt
