@@ -5,7 +5,7 @@ import random, datetime, os
 from scheduler import setup_scheduler
 from utils.google_sheets import save_feedback_to_google_sheets
 import nest_asyncio
-
+import asyncio
 TOKEN = os.environ["TOKEN"]
 ALLOWED_USERS = [671003971]
 CHANNEL_ID = "@Impactru"
